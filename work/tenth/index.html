@@ -1,4 +1,4 @@
-<!doctype html>
+'<!doctype html>
 <html>
   <head>
     <meta charset="UTF-8">
@@ -68,6 +68,55 @@
       //
       //
       //
+      $(function(){
+        $.ajax({
+          url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+          type: 'GET',
+          datatype: 'json',
+          data: {
+          applicationId: '1019399324990976605', 
+          booksGenreId: '001',
+          // keyword:　'りんご',
+          hits: 20,
+          // title: '<Items> ～ </Items>',
+          // author: '<Items> ～ </Items>',
+          // publisherName: '<Items> ～ </Items>',
+          },
+        }).done(function(data) {
+          console.log(data);
+          // 検索クリック時の情報をsearchTextに代入
+          $('.search').find('.search__btn').click(function(){
+          search();
+        });
+        function search(){
+          var searchText = $('.search').find('input').val();
+          console.log(searchText)
+        };
+        // HTML要素に検索したキーワードに対応するvalueを表示
+        text = '';
+        console.log(text);
+        $.each(data.Items,function htmlClass(index,value){
+          htmlClass();
+        })
+        function HTML(){
+          console.log()
+          text +="<li class='lists__item'>"+
+          "<div class='lists__item__inner'>"+
+          "<a href='"+value.Item.itemUrl+"' class='lists__item__link' target='_blank'>"+
+          "<img src='"+value.Item.largeImageUrl+"' class='lists__item__img' alt='"+value.Item.title+"'>"+
+          "<p class='lists__item__detail'>作品名："+value.Item.title+"</p>"+
+          "<p class='lists__item__detail'>作者　："+value.Item.author+"</p>"+
+          "<p class='lists__item__detail'>出版社："+value.Item.publisherName+"</p>"+
+          "</a>"+
+          "</div>"+
+          "</li>"
+        };
+
+          // $.each(data,function(title) {
+          //     console.log(title,value)
+          // });
+        });
+      });
     </script>
   </body>
 </html>
