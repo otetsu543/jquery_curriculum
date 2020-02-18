@@ -69,54 +69,86 @@
       //
       //
       $(function(){
-        $.ajax({
-          url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
-          type: 'GET',
-          datatype: 'json',
-          data: {
-          applicationId: '1019399324990976605', 
-          booksGenreId: '001',
-          // keyword:　'りんご',
-          hits: 20,
-          // title: '<Items> ～ </Items>',
-          // author: '<Items> ～ </Items>',
-          // publisherName: '<Items> ～ </Items>',
-          },
-        }).done(function(data) {
-          console.log(data);
-          // 検索クリック時の情報をsearchTextに代入
-          $('.search').find('.search__btn').click(function(){
-          search();
-        });
-        function search(){
-          var searchText = $('.search').find('input').val();
-          console.log(searchText)
-        };
-        // HTML要素に検索したキーワードに対応するvalueを表示
-        text = '';
-        console.log(text);
-        $.each(data.Items,function htmlClass(index,value){
-          htmlClass();
-        })
-        function HTML(){
-          console.log()
-          text +="<li class='lists__item'>"+
-          "<div class='lists__item__inner'>"+
-          "<a href='"+value.Item.itemUrl+"' class='lists__item__link' target='_blank'>"+
-          "<img src='"+value.Item.largeImageUrl+"' class='lists__item__img' alt='"+value.Item.title+"'>"+
-          "<p class='lists__item__detail'>作品名："+value.Item.title+"</p>"+
-          "<p class='lists__item__detail'>作者　："+value.Item.author+"</p>"+
-          "<p class='lists__item__detail'>出版社："+value.Item.publisherName+"</p>"+
-          "</a>"+
-          "</div>"+
-          "</li>"
-        };
-
-          // $.each(data,function(title) {
-          //     console.log(title,value)
-          // });
-        });
+        allWrap();
       });
+      function allWrap() {
+        oldText = ''
+        var pageNum = 1 ;
+          // 検索クリック時の情報をsearchTextに代入
+        $('.search').find('.search__btn').click(function() {
+          ajaxWrap();
+        });
+        function ajaxWrap() {
+          var searchText = $('.search').find('input').val();
+          //　検索結果２０以降の表示
+          if(searchText === oldText){
+            console.log('a')
+            pageNum = pageNum+ 1 ;
+          } else {
+            pageNum = 1
+            $('.lists__item').remove()
+          }
+          oldText = searchText
+          $.ajax({
+            url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+            type: 'GET',
+            datatype: 'json',
+            data: {
+            applicationId: '1019399324990976605', 
+            booksGenreId: '001',
+            keyword:　searchText,
+            hits: 20,
+            page: pageNum,
+          },
+          }).done(function(data) {
+            searchBook(data)
+          }).fail(function(error) {
+            errorMessage(error);
+          });
+          function searchBook(data) {
+          // HTML要素に検索したキーワードに対応するvalueを表示
+            var text = '';
+          // HTMLメソッドの表示
+            $('.message').remove();
+            if(0 === data.Items.length) {
+              $('.lists__item').remove();
+              $('.container').find('.search').after(
+              '<div class = "message">検索結果が見つかりませんでした。　<br> 別のキーワードで検索してください。</div>'
+              );
+            } else {
+          $.each(data.Items,function (index,value){
+            htmlClass(index,value);
+          });
+          function htmlClass(index,value) {
+            text += "<li class='lists__item'>"+
+            "<div class='lists__item__inner'>"+
+            "<a href='"+value.Item.itemUrl+"' class='lists__item__link' target='_blank'>"+
+            "<img src='"+value.Item.largeImageUrl+"' class='lists__item__img' alt='"+value.Item.title+"'>"+
+            "<p class='lists__item__detail'>作品名："+value.Item.title+"</p>"+
+            "<p class='lists__item__detail'>作者　："+value.Item.author+"</p>"+
+            "<p class='lists__item__detail'>出版社："+value.Item.publisherName+"</p>"+
+            "</a>"+
+            "</div>"+
+            "</li>"
+          };
+          };
+          $('.lists').prepend(text); 
+          };
+          function errorMessage(error) {
+            if (error.readyState === 0) {
+              $('.message').remove();
+              $('.lists__item').remove();
+              $('.container').find('.search').after( '<div class = "message">電波が繋がっていません.</div>');
+            }　else {
+              $('.message').remove();
+              $('.lists__item').remove();
+              $('.container').find('.search').after(
+              '<div class = "message">'+error.responseJSON.error_description+'</div>'
+              );
+            };
+          }
+        };
+      };
     </script>
   </body>
 </html>

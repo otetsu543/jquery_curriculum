@@ -15,6 +15,7 @@
     </div>
     <script src="../../common/js/jquery.js"></script>
     <script>
+      
       // [使うメソッド]
       // $.each(配列, function functionName() {}) 配列に対しての繰り返し処理
       // .html() 要素の中に引数を代入する。（まずは.append() でやってみましょう）
@@ -42,6 +43,23 @@
       // </li>
       //
       // このテンプレートに取得してきた中身を入れて表示します。
+        $(function(){
+          $.ajax({
+            url: './data.json'
+          })
+          .done(function (data) {
+            console.log(data);
+            var text ='';
+            $.each(data.colorsArray,function (index,value) {
+              console.log(value);
+              text += '<li class="colorList__item">'+
+              '<p class="colorList__title" style="background-color:'+value.hexValue+' ;">'+value.colorName+
+              '</li>'
+            });
+            console.log(text);
+            $('.colorList').html(text);
+          });
+        });
     </script>
   </body>
 </html>

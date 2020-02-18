@@ -100,19 +100,20 @@
       $(function() {
         $('.select').change(function(){
           var selectedVal = $(this).val();
-          $('.list').find('li').each(function(){
-            var data= $(this).data('category-type');
-            if( data == selectedVal ) {
-              $(this).show();
-              console.log('aaa')
-            } else if( selectedVal == 'all') {
-              $(this).show();
-            }
-            else {
-              $(this).hide();
-              console.log('bbb')
-            }
-          })
+          if( selectedVal === 'all') {
+              $('.list').find('li').show();
+            } else {
+              $('.list').find('li').each(function(){
+                var data= $(this).data('category-type');
+              if( data === selectedVal ) {
+                $(this).show();
+                console.log('aaa')
+              } else {
+                $(this).hide();
+                console.log('bbb')
+              }
+              })
+            };
           });
         });
     </script>
