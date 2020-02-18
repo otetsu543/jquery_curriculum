@@ -69,10 +69,10 @@
       //
       //
       $(function(){
-        allWrap();
+        getBooks();
       });
-      function allWrap() {
-        oldText = ''
+      function getBooks() {
+        var oldText = ''
         var pageNum = 1 ;
           // 検索クリック時の情報をsearchTextに代入
         $('.search').find('.search__btn').click(function() {
@@ -116,37 +116,37 @@
               '<div class = "message">検索結果が見つかりませんでした。　<br> 別のキーワードで検索してください。</div>'
               );
             } else {
-          $.each(data.Items,function (index,value){
-            htmlClass(index,value);
-          });
-          function htmlClass(index,value) {
-            text += "<li class='lists__item'>"+
-            "<div class='lists__item__inner'>"+
-            "<a href='"+value.Item.itemUrl+"' class='lists__item__link' target='_blank'>"+
-            "<img src='"+value.Item.largeImageUrl+"' class='lists__item__img' alt='"+value.Item.title+"'>"+
-            "<p class='lists__item__detail'>作品名："+value.Item.title+"</p>"+
-            "<p class='lists__item__detail'>作者　："+value.Item.author+"</p>"+
-            "<p class='lists__item__detail'>出版社："+value.Item.publisherName+"</p>"+
-            "</a>"+
-            "</div>"+
-            "</li>"
-          };
-          };
-          $('.lists').prepend(text); 
-          };
-          function errorMessage(error) {
-            if (error.readyState === 0) {
-              $('.message').remove();
-              $('.lists__item').remove();
-              $('.container').find('.search').after( '<div class = "message">電波が繋がっていません.</div>');
-            }　else {
-              $('.message').remove();
-              $('.lists__item').remove();
-              $('.container').find('.search').after(
-              '<div class = "message">'+error.responseJSON.error_description+'</div>'
-              );
+              $.each(data.Items,function (index,value){
+                htmlClass(index,value);
+              });
+              function htmlClass(index,value) {
+                text += "<li class='lists__item'>"+
+                "<div class='lists__item__inner'>"+
+                "<a href='"+value.Item.itemUrl+"' class='lists__item__link' target='_blank'>"+
+                "<img src='"+value.Item.largeImageUrl+"' class='lists__item__img' alt='"+value.Item.title+"'>"+
+                "<p class='lists__item__detail'>作品名："+value.Item.title+"</p>"+
+                "<p class='lists__item__detail'>作者　："+value.Item.author+"</p>"+
+                "<p class='lists__item__detail'>出版社："+value.Item.publisherName+"</p>"+
+                "</a>"+
+                "</div>"+
+                "</li>";
+              };
             };
-          }
+            $('.lists').prepend(text); 
+            };
+            function errorMessage(error) {
+              if (error.readyState === 0) {
+                $('.message').remove();
+                $('.lists__item').remove();
+                $('.container').find('.search').after( '<div class = "message">電波が繋がっていません.</div>');
+              }　else {
+                $('.message').remove();
+                $('.lists__item').remove();
+                $('.container').find('.search').after(
+                '<div class = "message">'+error.responseJSON.error_description+'</div>'
+                );
+              };
+            }
         };
       };
     </script>
