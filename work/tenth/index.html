@@ -1,4 +1,4 @@
-'<!doctype html>
+<!doctype html>
 <html>
   <head>
     <meta charset="UTF-8">
@@ -43,24 +43,24 @@
       //   type: 'GET',
       //   datatype: 'json',
       //   data: {
-      //     // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
-      //     applicationId: '1019399324990976605', // (今回はこのIDを使用してください) ※IDは他サイト等には絶対に転載しないでください
-      //     booksGenreId: '001'
-      //   },
-      // }).done(function(data) {
-      //   // この中にデータ取得後の動きを記述していきます。
-      //   console.log(data);
-      // });
-      //
-      //
-      // $.ajaxによってデータが取得できたら、必要なデータ(作品名とか作者名とか)を取得します。
-      // 取得できたらHTMLに<ul class='lists'></ul>を用意しているので、その中に下のテンプレに沿ってデータを入れ込みましょう。
-      // <li class='lists__item'>
-      //  <div class='lists__item__inner'>
-      //    <a href='' class='lists__item__link' target='_blank'>
-      //      <img src='' class='lists__item__img' alt=''>
-      //      <p class='lists__item__detail'>作品名：</p>
-      //      <p class='lists__item__detail'>作者　：</p>
+        //     // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
+        //     applicationId: '1019399324990976605', // (今回はこのIDを使用してください) ※IDは他サイト等には絶対に転載しないでください
+        //     booksGenreId: '001'
+        //   },
+        // }).done(function(data) {
+          //   // この中にデータ取得後の動きを記述していきます。
+          //   console.log(data);
+          // });
+          //
+          //
+          // $.ajaxによってデータが取得できたら、必要なデータ(作品名とか作者名とか)を取得します。
+          // 取得できたらHTMLに<ul class='lists'></ul>を用意しているので、その中に下のテンプレに沿ってデータを入れ込みましょう。
+          // <li class='lists__item'>
+            //  <div class='lists__item__inner'>
+              //    <a href='' class='lists__item__link' target='_blank'>
+                //      <img src='' class='lists__item__img' alt=''>
+                //      <p class='lists__item__detail'>作品名：</p>
+                //      <p class='lists__item__detail'>作者　：</p>
       //      <p class='lists__item__detail'>出版社：</p>
       //    </a>
       //  </div>
@@ -69,58 +69,63 @@
       //
       //
       $(function(){
-        getBooks();
-      });
-      function getBooks() {
-        var oldText = ''
-        var pageNum = 1 ;
-          // 検索クリック時の情報をsearchTextに代入
+        var oldText = '';
+        var pageNum = 1;
+        var searchText =''
+        // 検索クリック時の情報をsearchTextに代入
         $('.search').find('.search__btn').click(function() {
-          ajaxWrap();
+          ajaxWrap(oldText, pageNum);
         });
-        function ajaxWrap() {
-          var searchText = $('.search').find('input').val();
-          //　検索結果２０以降の表示
-          if(searchText === oldText){
-            console.log('a')
-            pageNum = pageNum+ 1 ;
-          } else {
-            pageNum = 1
-            $('.lists__item').remove()
-          }
-          oldText = searchText
-          $.ajax({
-            url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
-            type: 'GET',
-            datatype: 'json',
-            data: {
+      });
+      
+      function ajaxWrap(oldText, pageNum) {
+        //　検索内容を取得
+        searchText = $('.search').find('input').val();
+        //　検索結果２０以降の表示
+        console.log(searchText)
+        console.log(oldText)
+        if(searchText === oldText){
+          pageNum = pageNum + 1 ;
+        } else {
+          pageNum = 1
+          $('.lists__item').remove();
+        };
+        oldText = searchText;
+        $.ajax({
+          url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+          type: 'GET',
+          datatype: 'json',
+          data: {
             applicationId: '1019399324990976605', 
             booksGenreId: '001',
             keyword:　searchText,
             hits: 20,
             page: pageNum,
           },
-          }).done(function(data) {
-            searchBook(data)
-          }).fail(function(error) {
-            errorMessage(error);
-          });
-          function searchBook(data) {
-          // HTML要素に検索したキーワードに対応するvalueを表示
-            var text = '';
-          // HTMLメソッドの表示
-            $('.message').remove();
-            if(0 === data.Items.length) {
-              $('.lists__item').remove();
-              $('.container').find('.search').after(
-              '<div class = "message">検索結果が見つかりませんでした。　<br> 別のキーワードで検索してください。</div>'
-              );
-            } else {
-              $.each(data.Items,function (index,value){
-                htmlClass(index,value);
-              });
-              function htmlClass(index,value) {
-                text += "<li class='lists__item'>"+
+        }).done(function(data){
+          searchBook(data);
+        }).fail(function(error){
+          errorMessage(error);
+        })
+      };
+      
+      function searchBook(data) {
+        // HTML要素に検索したキーワードに対応するvalueを表示
+        var text = '';
+      // HTMLメソッドの表示
+        $('.message').remove();
+          if(0 === data.Items.length) {
+            $('.lists__item').remove();
+            $('.container').find('.search').after(
+            '<div class = "message">検索結果が見つかりませんでした。　<br> 別のキーワードで検索してください。</div>'
+            );
+          } else {
+            $.each(data.Items,function (index,value){
+              htmlClass(index,value);
+            });
+        
+            function htmlClass(index,value) {
+              text += "<li class='lists__item'>"+
                 "<div class='lists__item__inner'>"+
                 "<a href='"+value.Item.itemUrl+"' class='lists__item__link' target='_blank'>"+
                 "<img src='"+value.Item.largeImageUrl+"' class='lists__item__img' alt='"+value.Item.title+"'>"+
@@ -130,23 +135,22 @@
                 "</a>"+
                 "</div>"+
                 "</li>";
-              };
             };
-            $('.lists').prepend(text); 
-            };
-            function errorMessage(error) {
-              if (error.readyState === 0) {
-                $('.message').remove();
-                $('.lists__item').remove();
-                $('.container').find('.search').after( '<div class = "message">電波が繋がっていません.</div>');
-              }　else {
-                $('.message').remove();
-                $('.lists__item').remove();
-                $('.container').find('.search').after(
-                '<div class = "message">'+error.responseJSON.error_description+'</div>'
-                );
-              };
-            }
+          };
+          $('.lists').prepend(text); 
+        };
+      
+      function errorMessage(error) {
+        if (error.readyState === 0) {
+          $('.message').remove();
+          $('.lists__item').remove();
+          $('.container').find('.search').after( '<div class = "message">電波が繋がっていません.</div>');
+        }　else {
+          $('.message').remove();
+          $('.lists__item').remove();
+          $('.container').find('.search').after(
+          '<div class = "message">'+error.responseJSON.error_description+'</div>'
+          );
         };
       };
     </script>
